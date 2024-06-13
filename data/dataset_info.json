@@ -2,6 +2,23 @@
   "identity": {
     "file_name": "identity.json"
   },
+  "0606_gpt4_written_review": {
+    "hf_hub_url": "alexshengzhili/0606_output_processed_final"
+  },
+  "0606_gpt4_preference_loest_rated":
+  {
+    "hf_hub_url": "alexshengzhili/0606_output_processed_final_preference_dataset",
+    "ranking": true,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "chosen": "chosen",
+      "rejected": "rejected"
+    }
+  },
+  "0612_output_processed_final_human_written": {
+    "hf_hub_url": "alexshengzhili/0612_output_processed_final_human_written"
+  },
   "alpaca_en_demo": {
     "file_name": "alpaca_en_demo.json"
   },
