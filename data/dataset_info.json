@@ -5,6 +5,9 @@
   "0606_gpt4_written_review": {
     "hf_hub_url": "alexshengzhili/0606_output_processed_final"
   },
+  "0607_output_processed_sft_on_aggregated": {
+    "hf_hub_url": "alexshengzhili/0607_output_processed_sft_on_aggregated"
+  },
   "0606_gpt4_preference_loest_rated":
   {
     "hf_hub_url": "alexshengzhili/0606_output_processed_final_preference_dataset",
@@ -19,6 +22,17 @@
   "0607_gpt4_preference_loest_rated":
   {
     "hf_hub_url": "alexshengzhili/0607_output_processed_final_preference_dataset",
+    "ranking": true,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "chosen": "chosen",
+      "rejected": "rejected"
+    }
+  },
+  "0608_all_but_test_preference":
+  {
+    "hf_hub_url": "alexshengzhili/0608_all_but_test",
     "ranking": true,
     "columns": {
       "prompt": "instruction",
