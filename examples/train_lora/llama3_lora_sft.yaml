@@ -1,6 +1,6 @@
 ### model
 model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
-flash_attn: fa2
+flash_attn: sdpa
 ### method
 stage: sft
 do_train: true
@@ -8,22 +8,21 @@ finetuning_type: lora
 lora_target: all
 
 ### dataset
-dataset: 0606_gpt4_written_review
+dataset: 0806_iclr2023_cleaned
 template: llama3
-cutoff_len: 31000
-max_samples: 1000
+cutoff_len: 12000
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/llama3-8b/lora/sft
+output_dir: saves/llama3.1-8b/lora/sft/0806_iclr2023_cleaned
 logging_steps: 10
 save_steps: 500
 plot_loss: true
-overwrite_output_dir: true
+overwrite_output_dir: false
 
 ### train
-per_device_train_batch_size: 1
+per_device_train_batch_size: 2
 gradient_accumulation_steps: 8
 learning_rate: 1.0e-4
 num_train_epochs: 3.0

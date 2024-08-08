@@ -2,6 +2,9 @@
   "identity": {
     "file_name": "identity.json"
   },
+  "0806_iclr2023_cleaned": {
+    "hf_hub_url": "alexshengzhili/0806_ICLR2023_filtered"
+  },
   "0606_gpt4_written_review": {
     "hf_hub_url": "alexshengzhili/0606_output_processed_final"
   },
