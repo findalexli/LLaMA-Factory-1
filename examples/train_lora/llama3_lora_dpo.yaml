@@ -1,6 +1,7 @@
 ### model
 model_name_or_path: meta-llama/Meta-Llama-3.1-8B-Instruct
 flash_attn: fa2
+use_unsloth: true
 # deepspeed: examples/deepspeed/ds_z0_config.json
 ### method
 stage: dpo
@@ -13,7 +14,7 @@ pref_loss: sigmoid  # choices: [sigmoid (dpo), orpo, simpo]
 ### dataset
 dataset: 0608_all_but_test_preference
 template: llama3
-cutoff_len: 32000
+cutoff_len: 15000
 max_samples: 1000
 overwrite_cache: true
 preprocessing_num_workers: 16
@@ -32,7 +33,7 @@ learning_rate: 5.0e-6
 num_train_epochs: 3.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
-bf16: true
+bf16: true # not sure if bf16 is supported
 ddp_timeout: 180000000
 
 ### eval

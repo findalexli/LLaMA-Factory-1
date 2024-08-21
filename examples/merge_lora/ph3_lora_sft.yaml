@@ -2,7 +2,7 @@
 
 ### model
 model_name_or_path: microsoft/Phi-3-mini-128k-instruct
-adapter_name_or_path: saves/ph3-8b/lora/sft
+adapter_name_or_path: saves/phi3-8b/lora/sft/0806_iclr2023_cleaned
 template: phi
 finetuning_type: lora
 
@@ -11,4 +11,4 @@ export_dir: models/ph3_lora_sft
 export_size: 2
 export_device: cpu
 export_legacy_format: false
-export_hub_model_id: alexshengzhili/ph3-0606-lora-sft-merged
+export_hub_model_id: alexshengzhili/phi3-0806_iclr2023_cleaned

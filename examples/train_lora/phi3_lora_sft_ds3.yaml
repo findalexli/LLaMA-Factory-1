@@ -6,7 +6,7 @@ stage: sft
 do_train: true
 finetuning_type: lora
 lora_target: all
-deepspeed: examples/deepspeed/ds_z3_config.json
+# deepspeed: examples/deepspeed/ds_z3_config.json
 ### dataset
 dataset: 0607_output_processed_sft_on_aggregated
 template: phi
@@ -16,7 +16,7 @@ overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/ph3-8b/lora/sft_0607_output_processed_sft_on_aggregated
+output_dir: saves/ph3-8b/lora/sft_0607_output_processed_sft_on_aggregated_rerun
 logging_steps: 1
 save_steps: 500
 plot_loss: true
@@ -38,3 +38,7 @@ val_size: 0.1
 per_device_eval_batch_size: 1
 eval_strategy: steps
 eval_steps: 500
+
+# Logging
+report_to: wandb
+run_name: phi3_rerun_sft # optional
