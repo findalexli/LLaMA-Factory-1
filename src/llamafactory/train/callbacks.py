@@ -32,9 +32,11 @@ from transformers.utils import (
     WEIGHTS_NAME,
     is_safetensors_available,
 )
+from typing_extensions import override
 
 from ..extras.constants import TRAINER_LOG, V_HEAD_SAFE_WEIGHTS_NAME, V_HEAD_WEIGHTS_NAME
 from ..extras.logging import LoggerHandler, get_logger
+from ..extras.misc import get_peak_memory
 
 
 if is_safetensors_available():
@@ -73,8 +75,8 @@ def fix_valuehead_checkpoint(
         path_to_checkpoint = os.path.join(output_dir, WEIGHTS_NAME)
         state_dict: Dict[str, torch.Tensor] = torch.load(path_to_checkpoint, map_location="cpu")
 
-    decoder_state_dict = {}
-    v_head_state_dict = {}
+    os.remove(path_to_checkpoint)
+    decoder_state_dict, v_head_state_dict = {}, {}
     for name, param in state_dict.items():
         if name.startswith("v_head."):
             v_head_state_dict[name] = param
@@ -90,11 +92,11 @@ def fix_valuehead_checkpoint(
     else:
         torch.save(v_head_state_dict, os.path.join(output_dir, V_HEAD_WEIGHTS_NAME))
 
-    os.remove(path_to_checkpoint)
     logger.info("Value head model saved at: {}".format(output_dir))
 
 
 class FixValueHeadModelCallback(TrainerCallback):
+    @override
     def on_save(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called after a checkpoint save.
@@ -114,6 +116,7 @@ class SaveProcessorCallback(TrainerCallback):
         """
         self.processor = processor
 
+    @override
     def on_train_end(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the end of training.
@@ -127,6 +130,7 @@ class PissaConvertCallback(TrainerCallback):
     Initializes a callback for converting the PiSSA adapter to a normal one.
     """
 
+    @override
     def on_train_begin(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the beginning of training.
@@ -141,6 +145,7 @@ class PissaConvertCallback(TrainerCallback):
                 model.save_pretrained(pissa_init_dir, safe_serialization=args.save_safetensors)
                 setattr(model.peft_config["default"], "init_lora_weights", init_lora_weights)
 
+    @override
     def on_train_end(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the end of training.
@@ -162,11 +167,12 @@ class PissaConvertCallback(TrainerCallback):
                 setattr(model.peft_config["default"], "init_lora_weights", init_lora_weights)
                 model.save_pretrained(
                     pissa_convert_dir, safe_serialization=args.save_safetensors, convert_pissa_to_lora=pissa_init_dir
-                )
+                )  # TODO: use `path_initial_model_for_weight_conversion` (peft>=0.12.0)
                 model.load_adapter(pissa_backup_dir, "default", is_trainable=True)
                 model.set_adapter("default")
-                if "pissa_init" in model.peft_config.keys():
+                if "pissa_init" in model.peft_config.keys():  # backward compatibility (peft<0.12.0)
                     model.delete_adapter("pissa_init")
+
                 setattr(model.peft_config["default"], "init_lora_weights", init_lora_weights)
 
 
@@ -225,6 +231,7 @@ class LogCallback(TrainerCallback):
             self.thread_pool.shutdown(wait=True)
             self.thread_pool = None
 
+    @override
     def on_init_end(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the end of the initialization of the `Trainer`.
@@ -237,6 +244,7 @@ class LogCallback(TrainerCallback):
             logger.warning("Previous trainer log in this folder will be deleted.")
             os.remove(os.path.join(args.output_dir, TRAINER_LOG))
 
+    @override
     def on_train_begin(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the beginning of training.
@@ -246,12 +254,14 @@ class LogCallback(TrainerCallback):
             self._reset(max_steps=state.max_steps)
             self._create_thread_pool(output_dir=args.output_dir)
 
+    @override
     def on_train_end(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the end of training.
         """
         self._close_thread_pool()
 
+    @override
     def on_substep_end(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the end of an substep during gradient accumulation.
@@ -260,6 +270,7 @@ class LogCallback(TrainerCallback):
             control.should_epoch_stop = True
             control.should_training_stop = True
 
+    @override
     def on_step_end(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called at the end of a training step.
@@ -268,6 +279,7 @@ class LogCallback(TrainerCallback):
             control.should_epoch_stop = True
             control.should_training_stop = True
 
+    @override
     def on_evaluate(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called after an evaluation phase.
@@ -275,6 +287,7 @@ class LogCallback(TrainerCallback):
         if not self.do_train:
             self._close_thread_pool()
 
+    @override
     def on_predict(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called after a successful prediction.
@@ -282,6 +295,7 @@ class LogCallback(TrainerCallback):
         if not self.do_train:
             self._close_thread_pool()
 
+    @override
     def on_log(self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs):
         r"""
         Event called after logging the last logs.
@@ -303,20 +317,28 @@ class LogCallback(TrainerCallback):
             percentage=round(self.cur_steps / self.max_steps * 100, 2) if self.max_steps != 0 else 100,
             elapsed_time=self.elapsed_time,
             remaining_time=self.remaining_time,
-            throughput="{:.2f}".format(state.num_input_tokens_seen / (time.time() - self.start_time)),
-            total_tokens=state.num_input_tokens_seen,
         )
+        if state.num_input_tokens_seen:
+            logs["throughput"] = round(state.num_input_tokens_seen / (time.time() - self.start_time), 2)
+            logs["total_tokens"] = state.num_input_tokens_seen
+
+        if os.environ.get("RECORD_VRAM", "0").lower() in ["true", "1"]:
+            vram_allocated, vram_reserved = get_peak_memory()
+            logs["vram_allocated"] = round(vram_allocated / 1024 / 1024 / 1024, 2)
+            logs["vram_reserved"] = round(vram_reserved / 1024 / 1024 / 1024, 2)
+
         logs = {k: v for k, v in logs.items() if v is not None}
         if self.webui_mode and all(key in logs for key in ["loss", "learning_rate", "epoch"]):
             logger.info(
                 "{{'loss': {:.4f}, 'learning_rate': {:2.4e}, 'epoch': {:.2f}, 'throughput': {}}}".format(
-                    logs["loss"], logs["learning_rate"], logs["epoch"], logs["throughput"]
+                    logs["loss"], logs["learning_rate"], logs["epoch"], logs.get("throughput", "N/A")
                 )
             )
 
         if self.thread_pool is not None:
             self.thread_pool.submit(self._write_log, args.output_dir, logs)
 
+    @override
     def on_prediction_step(
         self, args: "TrainingArguments", state: "TrainerState", control: "TrainerControl", **kwargs
     ):
