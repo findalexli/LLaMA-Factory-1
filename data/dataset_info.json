@@ -44,6 +44,17 @@
       "rejected": "rejected"
     }
   },
+  "0907_preference_iclr2023":
+  {
+    "hf_hub_url": "alexshengzhili/0907_preference_iclr2023",
+    "ranking": true,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "chosen": "chosen",
+      "rejected": "rejected"
+    }
+  },
   "0612_output_processed_final_human_written": {
     "hf_hub_url": "alexshengzhili/0612_output_processed_final_human_written"
   },

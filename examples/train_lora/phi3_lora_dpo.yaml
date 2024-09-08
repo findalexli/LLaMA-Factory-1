@@ -10,16 +10,16 @@ pref_beta: 0.1
 pref_loss: sigmoid  # [sigmoid (dpo), orpo, simpo]
 deepspeed: examples/deepspeed/ds_z3_config.json
 ### dataset
-dataset: 0608_all_but_test_preference
+dataset: 0907_preference_iclr2023
 template: phi
-cutoff_len: 32000
+cutoff_len: 12000
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/phi3-8b/lora/dpo_0608_remaining_beta_0dot1
+output_dir: saves/phi3-8b/lora/dpo_0907_preference_iclr2023
 logging_steps: 1
-save_steps: 500
+save_steps: 30
 plot_loss: true
 overwrite_output_dir: true
 
@@ -27,7 +27,7 @@ overwrite_output_dir: true
 per_device_train_batch_size: 1
 gradient_accumulation_steps: 16
 learning_rate: 5.0e-6
-num_train_epochs: 3.0
+num_train_epochs: 2
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 fp16: true
@@ -37,4 +37,7 @@ ddp_timeout: 180000000
 val_size: 0.1
 per_device_eval_batch_size: 1
 eval_strategy: steps
-eval_steps: 500
+eval_steps: 50
+
+report_to: wandb
+run_name: phi_3_dpo_0907_preference_iclr2023 # optional
