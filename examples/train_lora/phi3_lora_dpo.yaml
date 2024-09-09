@@ -19,7 +19,7 @@ preprocessing_num_workers: 16
 ### output
 output_dir: saves/phi3-8b/lora/dpo_0908_preference_4_conference_shuffled_2023
 ## resume
-resume_from_checkpoint: saves/phi3-8b/lora/dpo_0908_preference_4_conference_shuffled_2023/checkpoint-30
+resume_from_checkpoint: saves/phi3-8b/lora/dpo_0908_preference_4_conference_shuffled_2023/checkpoint-90
 logging_steps: 1
 save_steps: 30
 plot_loss: true

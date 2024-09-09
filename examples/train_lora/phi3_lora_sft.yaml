@@ -8,14 +8,14 @@ finetuning_type: lora
 lora_target: all
 
 ### dataset
-dataset: 0806_iclr2023_cleaned
+dataset: 0908_preference_4_conference_shuffled_2023_sft
 template: phi
 cutoff_len: 12000
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/phi3-8b/lora/sft/0806_iclr2023_cleaned
+output_dir: saves/phi3-8b/lora/sft/0908_preference_4_conference_shuffled_2023_sft
 logging_steps: 10
 save_steps: 500
 plot_loss: true
@@ -38,4 +38,4 @@ eval_strategy: steps
 eval_steps: 500
 
 report_to: wandb
-run_name: phi_3_0806_iclr2023_cleaned # optional
+run_name: phi_3_0908_preference_4_conference_shuffled_2023_sft # optional

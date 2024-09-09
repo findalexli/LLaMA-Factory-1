@@ -66,6 +66,15 @@
       "rejected": "rejected"
     }
   },
+  "0908_preference_4_conference_shuffled_2023_sft":
+  {
+    "hf_hub_url": "alexshengzhili/0908_preference_4_conference_shuffled_2023",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "chosen"
+    }
+  },
   "0612_output_processed_final_human_written": {
     "hf_hub_url": "alexshengzhili/0612_output_processed_final_human_written"
   },
