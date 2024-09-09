@@ -1,5 +1,5 @@
 ### model
-model_name_or_path: microsoft/Phi-3-mini-128k-instruct
+model_name_or_path: google/gemma-2b-it
 flash_attn: fa2
 ### method
 stage: dpo
@@ -8,18 +8,17 @@ finetuning_type: lora
 lora_target: all
 pref_beta: 0.1
 pref_loss: sigmoid  # [sigmoid (dpo), orpo, simpo]
-deepspeed: examples/deepspeed/ds_z3_config.json
+deepspeed: examples/deepspeed/ds_z3_offload_config.json
 ### dataset
 dataset: 0908_preference_4_conference_shuffled_2023
-template: phi
-cutoff_len: 12000
+template: gemma
+cutoff_len: 10000
+rope_scaling: linear
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/phi3-8b/lora/dpo_0908_preference_4_conference_shuffled_2023
-## resume
-resume_from_checkpoint: saves/phi3-8b/lora/dpo_0908_preference_4_conference_shuffled_2023/checkpoint-30
+output_dir: saves/gemma/lora/dpo_0908_preference_4_conference_shuffled_2023
 logging_steps: 1
 save_steps: 30
 plot_loss: true
@@ -34,7 +33,7 @@ lr_scheduler_type: cosine
 warmup_ratio: 0.1
 fp16: true
 ddp_timeout: 180000000
-
+ 
 ### eval
 val_size: 0.1
 per_device_eval_batch_size: 1
@@ -42,4 +41,4 @@ eval_strategy: steps
 eval_steps: 50
 
 report_to: wandb
-run_name: phi_3_dpo_0908_preference_4_conference_shuffled_2023 # optional
+run_name: gemma-2b-it_dpo_0908_preference_4_conference_shuffled_2023 # optional

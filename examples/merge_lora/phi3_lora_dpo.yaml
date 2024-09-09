@@ -2,13 +2,13 @@
 
 ### model
 model_name_or_path: microsoft/Phi-3-mini-128k-instruct
-adapter_name_or_path: saves/phi3-8b/lora/dpo_0608_remaining_beta_0dot1
+adapter_name_or_path: saves/phi3-8b/lora/dpo_0907_preference_iclr2023
 template: phi
 finetuning_type: lora
 
 ### export
-export_dir: models/phi3-0608_all_of_train-dpo-merged
+export_dir: models/phi3-dpo_0907_preference_iclr2023
 export_size: 2
 export_device: cpu
 export_legacy_format: false
-export_hub_model_id: alexshengzhili/phi3-0608_all_of_train-dpo-merged
+export_hub_model_id: alexshengzhili/phi3-dpo_0907_preference_iclr2023
